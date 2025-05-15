@@ -1,0 +1,6 @@
+pydantic-ai[groq]==0.2.4
+pydantic==2.11.4
+fastapi==0.115.12
+uvicorn==0.34.2
+python-dotenv==1.1.0
+pytest==8.3.5
