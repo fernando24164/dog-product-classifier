@@ -1,7 +1,9 @@
 from typing import List
 
+from fastapi import HTTPException
 from pydantic import BaseModel, Field
 from pydantic_ai import Agent
+from pydantic_ai.exceptions import UnexpectedModelBehavior
 
 from ..models import DogProduct, ProductCategory
 
@@ -57,8 +59,13 @@ async def classify_product(
     Returns:
         ProductCategory object with classification results
     """
-    prompt = create_classification_prompt(product, categories)
-    result = await agent.run(prompt, output_cls=ClassificationOutput)
+    try:
+        prompt = create_classification_prompt(product, categories)
+        result = await agent.run(prompt, output_type=ClassificationOutput)
+    except UnexpectedModelBehavior as e:
+        raise HTTPException(status_code=500, detail=f"Unexpected model behavior: {e}")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Classification failed: {e}")
 
     return ProductCategory(
         category=result.output.category,
