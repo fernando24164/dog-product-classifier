@@ -28,7 +28,9 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
         You are a dog product classification expert. Your task is to classify dog products into the most appropriate category.  
         Analyze the product name and description carefully to determine the best category.  
         Provide a confidence score between 0 and 1, where 1 is the highest confidence.  
-        Also suggest relevant subcategories for the product.  
+        Also suggest relevant subcategories for the product.
+        Ensure that your response is always formatted as a ClassificationOutput.
+        If you detect that the product is not intended for dogs, lower the confidence score accordingly.
         """,
     )
 
