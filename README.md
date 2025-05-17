@@ -1,19 +1,17 @@
 # 🐾 Dog Product Classifier API
 
-A high-performance API for intelligent categorization of dog products using AI-powered classification. Built with FastAPI and integrated with Groq's lightning-fast LLM inference.
+A REST API for intelligent categorization of dog products using AI-powered classification. Built with FastAPI and integrated with Groq's LLM inference.
 
 [![Python 3.9+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.115.12-blue.svg)](https://fastapi.tiangolo.com/)
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](https://opensource.org/licenses/MIT)
 
-## 🚀 Features
+## 🚀 How to get Groq API key
 
-- AI-powered product classification using Groq's LLM inference
-- RESTful API endpoints with automatic Swagger documentation
-- Strict type validation with Pydantic models
-- Confidence scoring and subcategory suggestions
-- Production-ready architecture with dependency injection
-- Comprehensive test coverage with pytest
+1. **Sign up for Groq**
+    - Visit the [Groq website](https://console.groq.com/home) and sign up for an account.
+2. **Generate an API key**
+    - Once logged in, navigate to your account settings and generate an API key.
 
 ## 📦 Installation
 
