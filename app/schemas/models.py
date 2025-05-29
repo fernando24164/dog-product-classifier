@@ -1,4 +1,5 @@
 from typing import List
+
 from pydantic import BaseModel, Field
 
 
@@ -15,3 +16,6 @@ class ProductCategory(BaseModel):
     subcategories: List[str] = Field(
         default_factory=list, description="Subcategories of the dog product"
     )
+
+    class Config:
+        from_attributes = True

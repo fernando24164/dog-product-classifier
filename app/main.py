@@ -4,9 +4,11 @@ from typing import AsyncGenerator
 
 from dotenv import load_dotenv
 from fastapi import FastAPI, HTTPException
-from pydantic_ai import Agent
-from pydantic_ai.providers.groq import GroqProvider
 
+from app.routers import products
+
+from .agents.classifier_agent import classifier_agent
+from .database.connection import create_db_engine, create_session_factory, create_tables
 from .routers import classifier, health
 
 load_dotenv()
@@ -20,24 +22,16 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
             status_code=500, detail="GROQ_API_KEY not found in .env file"
         )
 
-    app.state.groq_provider = GroqProvider(api_key=api_key)
-    app.state.classifier_agent = Agent(
-        "groq:llama-3.1-8b-instant",
-        provider=app.state.groq_provider,
-        system_prompt="""  
-        You are a dog product classification expert. Your task is to classify dog products into the most appropriate category.  
-        Analyze the product name and description carefully to determine the best category.  
-        Provide a confidence score between 0 and 1, where 1 is the highest confidence.  
-        Also suggest relevant subcategories for the product.
-        Ensure that your response is always formatted as a ClassificationOutput.
-        If you detect that the product is not intended for dogs, lower the confidence score accordingly.
-        """,
-    )
+    engine = create_db_engine()
+    await create_tables(engine)
+
+    app.state.session_factory = create_session_factory(engine)
+    app.state.classifier_agent = classifier_agent
 
     yield
 
-    app.state.groq_provider = None
-    app.state.classifier_agent = None
+    # Cleanup resources
+    await engine.dispose()
 
 
 def get_application():
@@ -48,3 +42,4 @@ app = get_application()
 
 app.include_router(classifier.router)
 app.include_router(health.router)
+app.include_router(products.router)

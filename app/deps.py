@@ -27,3 +27,16 @@ def get_classifier_agent(request: Request) -> Agent:
         The classifier agent instance
     """
     return request.app.state.classifier_agent
+
+
+def get_db_session_factory(request: Request):
+    """
+    Get the database session factory from app.state.
+
+    Args:
+        request: The FastAPI request object
+
+    Returns:
+        The database session factory
+    """
+    return request.app.state.session_factory

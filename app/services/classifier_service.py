@@ -4,8 +4,11 @@ from fastapi import HTTPException
 from pydantic import BaseModel, Field
 from pydantic_ai import Agent
 from pydantic_ai.exceptions import UnexpectedModelBehavior
+from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
-from ..models import DogProduct, ProductCategory
+from ..agents.classifier_agent import DbDeps
+
+from ..schemas.models import DogProduct, ProductCategory
 
 
 class ClassificationOutput(BaseModel):
@@ -41,12 +44,15 @@ def create_classification_prompt(product: DogProduct, categories: List[str]) -> 
       
     Available categories: {", ".join(categories)}  
       
-    Respond with the most appropriate category, a confidence score (0-1), and relevant subcategories.  
+    Respond with the most appropriate category, a confidence score (0-1), and relevant subcategories.
     """
 
 
 async def classify_product(
-    product: DogProduct, agent: Agent, categories: List[str] = PRODUCT_CATEGORIES
+    product: DogProduct,
+    agent: Agent,
+    db_session_factory: async_sessionmaker[AsyncSession],
+    categories: List[str] = PRODUCT_CATEGORIES,
 ) -> ProductCategory:
     """
     Classify a dog product using the AI agent.
@@ -67,8 +73,15 @@ async def classify_product(
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Classification failed: {e}")
 
-    return ProductCategory(
+    classified_product = ProductCategory(
         category=result.output.category,
         confidence=result.output.confidence,
         subcategories=result.output.subcategories,
     )
+
+    await agent.run(
+        "Save the classification result in the database.",
+        deps=DbDeps(db_session_factory, classified_product),
+    )
+
+    return classified_product
