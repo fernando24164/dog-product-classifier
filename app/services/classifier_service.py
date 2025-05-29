@@ -7,7 +7,6 @@ from pydantic_ai.exceptions import UnexpectedModelBehavior
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
 from ..agents.classifier_agent import DbDeps
-
 from ..schemas.models import DogProduct, ProductCategory
 
 

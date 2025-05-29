@@ -1,12 +1,15 @@
+import os
+
 import pytest
 from fastapi.testclient import TestClient
 from unittest.mock import AsyncMock, patch
 
-from app.main import app
 
 @pytest.fixture
 def client():
     """Return a TestClient for the FastAPI app."""
+    os.environ["GROQ_API_KEY"] = "test-key"
+    from app.main import app
     return TestClient(app)
 
 @pytest.fixture
